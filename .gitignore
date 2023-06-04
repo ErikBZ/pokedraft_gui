@@ -1,0 +1,10 @@
+# DB stuff
+**/data/
+**/migrations/
+*.sqlite3
+
+# PyCache
+**/__pycache__/
+
+# django
+config.local

@@ -5,11 +5,16 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=pokemon-draft
     volumes:
-      - type: bind
-        source: ./data
-        target: /data/db
+        - ./data/:/data/db:rw
+    ports:
+      - '27017:27017'
+    networks:
+      - mongo
   mongo-express:
+    depends_on:
+      - mongodb
     image: mongo-express:1.0.0-alpha.4
     restart: unless-stopped
     environment:
@@ -17,4 +22,10 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: admin
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: "27017"
-      
+    ports:
+      - '8081:8081'
+    networks:
+      - mongo      
+networks:
+  mongo:
+    driver: bridge
