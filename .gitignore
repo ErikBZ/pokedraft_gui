@@ -1,5 +1,4 @@
 # DB stuff
-**/data/
 **/migrations/
 *.sqlite3
 

@@ -16,12 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from pokedraft.views import PokmeonDraftListViewSet
+from pokedraft.views import PokmeonDraftListViewSet, PokemonListViewSet, PokmeonDraftListSimple
 
 router = routers.DefaultRouter()
-router.register(r'drafts', PokmeonDraftListViewSet)
+router.register(r'drafts', PokmeonDraftListSimple)
+router.register(r'pokemon', PokemonListViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    path('drafts/<pk>', PokmeonDraftListViewSet.as_view({"get": "retrieve"}))
 ]
