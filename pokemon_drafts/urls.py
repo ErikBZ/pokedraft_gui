@@ -25,5 +25,6 @@ router.register(r'pokemon', PokemonListViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('drafts/<pk>', PokmeonDraftListViewSet.as_view({"get": "retrieve"}))
+    path('drafts/<pk>', PokmeonDraftListViewSet.as_view({"get": "retrieve"})),
+    path('drafts/<pk>/', PokmeonDraftListViewSet.as_view({"get": "retrieve"}))
 ]

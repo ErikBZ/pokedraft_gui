@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from .serializers import PokemonDraftListSerializer, PokemonSerializer, PokemonDraftListSimpleSerializer
 from .models import PokemonDraftList, Pokemon
 
@@ -6,7 +6,7 @@ class PokmeonDraftListViewSet(viewsets.ModelViewSet):
     queryset = PokemonDraftList.objects.all()
     serializer_class = PokemonDraftListSerializer
 
-class PokmeonDraftListSimple(viewsets.ModelViewSet):
+class PokmeonDraftListSimple(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = PokemonDraftList.objects.all()
     serializer_class = PokemonDraftListSimpleSerializer
 
