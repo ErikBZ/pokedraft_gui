@@ -1,14 +1,15 @@
 import '../App.css';
 import { useLocation } from "react-router-dom"
 import { useEffect, useState } from 'react';
+import { format } from 'react-string-format'
 
-function List() {
+function PokemonList() {
     const [draft, setDraft] = useState([])
-    const location = useLocation();
+    const [pokemon, setPokemon] = useState([])
 
     const getDraft = async() => {
         const response = fetch(
-            "http://localhost:8000/drafts/4"
+            "http://localhost:8000/drafts_list/12/"
         );
         const json = (await response).json();
         return json;
@@ -16,19 +17,22 @@ function List() {
 
     useEffect(() => {
         getDraft().then(draft => {
-            setDraft(draft)
+            setDraft(draft);
         });
     }, []);
 
     return (
         <div className="draft">
             {
-                draft["pokemon_list"].map((item, i) => (
-                    <p>{item}</p>
+                draft.pokemon_list.map((item, i)  => (
+                    <p>{item['name']}</p>
                 ))
             }
+            <div>
+                <p>HI</p>
+            </div>
         </div>
     );
 }
 
-export default List;
+export default PokemonList;
