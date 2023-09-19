@@ -29,6 +29,9 @@ def build():
 def clear_list():
     PokemonDraftList.objects.all().delete()
 
+def clear_pokemon():
+    Pokemon.objects.all().delete()
+
 def build_lists():
     all_pokemon = Pokemon.objects.all()
     list_gen_1 = PokemonDraftList(name="Generation 1 All")
