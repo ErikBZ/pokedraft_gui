@@ -11,21 +11,29 @@ class PokemonSerializer(serializers.ModelSerializer):
 class PokemonDraftSetSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = PokemonDraftSet
-        fields = ["name", "draft_id"]
+        fields = ["name", "id"]
 
 class PokemonDraftSetSerializer(serializers.HyperlinkedModelSerializer):
     pokemon_list = PokemonSerializer(many=True)
     class Meta:
         model = PokemonDraftSet
-        read_only_fields = ['draft_id', 'pokemon_list']
-        fields = ["name", "draft_id", "pokemon_list"]
+        read_only_fields = ['id', 'pokemon_list']
+        fields = ["name", "id", "pokemon_list"]
+
+class DraftRulesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DraftRules
+        fields = ["name", "id", "picks_per_round", "bans_per_round", "turn_type", "max_pokemon"]
 
 class DraftSessionSerializer(serializers.ModelSerializer):
+    players = serializers.RelatedField(many=True, read_only=True)
+
     class Meta:
         model = DraftSession
-        fields = ["name", "draft_used", "max_pokemon", "session_id"]
+        read_only_fields = ["banned_pokemon", "id", "current_phase"]
+        exclude = []
 
 class DraftUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DraftUser
-        fields = ["name", "session_id", "current_turn", "pokemon_selected"]
+        fields = ["name", "id", "current_turn", "pokemon_selected"]

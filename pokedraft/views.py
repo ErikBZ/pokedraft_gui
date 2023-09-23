@@ -19,6 +19,10 @@ class PokemonListViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Pokemon.objects.all()
     serializer_class = PokemonSerializer
 
+class DraftRuleListViewSet(viewsets.ModelViewSet):
+    queryset = DraftRules.objects.all()
+    serializer_class = DraftRulesSerializer
+
 class DraftSessionView(mixins.CreateModelMixin,
                                     mixins.RetrieveModelMixin,
                                     viewsets.GenericViewSet):

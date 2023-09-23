@@ -23,6 +23,7 @@ router.register(r'draft_set', PokmeonDraftListSimple)
 router.register(r'pokemon', PokemonListViewSet)
 router.register(r'draft_session', DraftSessionView)
 router.register(r'draft_user', DraftUserView)
+router.register(r'draft_rules', DraftRuleListViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
