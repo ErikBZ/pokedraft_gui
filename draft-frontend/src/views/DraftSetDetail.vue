@@ -1,5 +1,9 @@
 <template>
   <h1>Pokemon</h1>
+  <h2>{{ name }}</h2>
+  <li v-for="pk in pokemon" :key="pk.name">
+    {{ pk.name }}
+  </li>
 </template>
 
 <script>
@@ -9,15 +13,17 @@ export default {
     return {
       name: "",
       draft_id: 0,
-      pokemon: []
+      pokemon: [],
     }
   },
   mounted() {
-    fetch('http://localhost:8000/drafts_list/1')
+    fetch('http://localhost:8000/draft_set/' + this.$route.params.id)
       .then(res => res.json())
-      .then(data => this.name = data['name'])
-      .then(data => this.draft_id = data['draft_id'])
-      .then(data => this.pokemon = data['pokemon'])
+      .then(data => {
+        this.name = data['name'],
+        this.draft_id = data['id'],
+        this.pokemon = data['pokemon_list']
+      })
       .catch(err => console.log(err.message))
   }
 }
