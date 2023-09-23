@@ -15,7 +15,7 @@ class Pokemon(models.Model):
     is_legendary = models.BooleanField()
     is_mythic = models.BooleanField()
 
-class PokemonDraftList(models.Model):
+class PokemonDraftSet(models.Model):
     draft_id = models.BigAutoField(primary_key=True)
     name = models.TextField(null=True, blank=True)
     pokemon_list = models.ManyToManyField(Pokemon)
@@ -23,7 +23,7 @@ class PokemonDraftList(models.Model):
 class DraftSession(models.Model):
     session_id = models.BigAutoField(primary_key=True)
     name = models.TextField(null=True, blank=True)
-    draft_used = models.ForeignKey(PokemonDraftList, on_delete=models.CASCADE, null=True)
+    draft_used = models.ForeignKey(PokemonDraftSet, on_delete=models.CASCADE, null=True)
     max_pokemon = models.IntegerField()
     min_num_players = models.IntegerField(default=2)
     max_num_players = models.IntegerField(default=4)

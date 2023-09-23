@@ -7,12 +7,12 @@ import json
 import uuid
 
 class PokmeonDraftListViewSet(viewsets.ModelViewSet):
-    queryset = PokemonDraftList.objects.all()
-    serializer_class = PokemonDraftListSerializer
+    queryset = PokemonDraftSet.objects.all()
+    serializer_class = PokemonDraftSetSerializer
 
 class PokmeonDraftListSimple(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = PokemonDraftList.objects.all()
-    serializer_class = PokemonDraftListSimpleSerializer
+    queryset = PokemonDraftSet.objects.all()
+    serializer_class = PokemonDraftSetSimpleSerializer
 
 
 class PokemonListViewSet(viewsets.ReadOnlyModelViewSet):

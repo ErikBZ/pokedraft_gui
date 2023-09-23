@@ -8,15 +8,15 @@ class PokemonSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "name", "type1", "type2", "evolves_from", "gen", "is_legendary", "is_mythic"]
         fields = ["id", "name", "type1", "type2", "evolves_from", "gen", "is_legendary", "is_mythic"]
 
-class PokemonDraftListSimpleSerializer(serializers.ModelSerializer):
+class PokemonDraftSetSimpleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PokemonDraftList
+        model = PokemonDraftSet
         fields = ["name", "draft_id"]
 
-class PokemonDraftListSerializer(serializers.HyperlinkedModelSerializer):
+class PokemonDraftSetSerializer(serializers.HyperlinkedModelSerializer):
     pokemon_list = PokemonSerializer(many=True)
     class Meta:
-        model = PokemonDraftList
+        model = PokemonDraftSet
         read_only_fields = ['draft_id', 'pokemon_list']
         fields = ["name", "draft_id", "pokemon_list"]
 

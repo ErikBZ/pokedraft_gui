@@ -1,4 +1,4 @@
-from pokedraft.models import Pokemon, PokemonDraftList
+from pokedraft.models import Pokemon, PokemonDraftSet
 from django.db import connection
 import json
 
@@ -27,14 +27,14 @@ def build():
     build_pokemon()
 
 def clear_list():
-    PokemonDraftList.objects.all().delete()
+    PokemonDraftSet.objects.all().delete()
 
 def clear_pokemon():
     Pokemon.objects.all().delete()
 
 def build_lists():
     all_pokemon = Pokemon.objects.all()
-    list_gen_1 = PokemonDraftList(name="Generation 1 All")
+    list_gen_1 = PokemonDraftSet(name="Generation 1 All")
     list_gen_1.save()
     print("Adding pokemon to the list")
     list_gen_1.pokemon_list.add(*at_least_gen(all_pokemon, 1))
