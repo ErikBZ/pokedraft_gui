@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from .serializers import *
@@ -34,30 +34,27 @@ class DraftSessionView(mixins.CreateModelMixin,
     def create_user(self, request, pk=None):
         session = self.get_session(pk)
         if session == None:
-            return HttpResponse("Session does not exist", status=404)
+            return JsonResponse({"message": "Session does not exist"}, status=404)
 
-        if "name" not in request.data:
-            return HttpResponse("Name missing in post data", status=422)
+        if "name" not in request.data or request.data["name"] == "":
+            return JsonResponse({"message": "Name missing in post data"}, status=422)
+
+        player_names = [x.name for x in session.draftuser_set.all()]
+
+        if request.data["name"] in player_names:
+            return JsonResponse({"message": "Name already used"}, status=401)
 
         new_user = DraftUser(name=request.data["name"], current_turn=False,
-                             session_id=session, key=str(uuid.uuid4()))
+                             session=session, key=str(uuid.uuid4()))
         new_user.save()
-        if session.starting_player == None or session.starting_player == "":
-            session.starting_player = new_user.pk
-        else:
-            tail = self.get_tail_player(session.starting_player)
-            tail.next = new_user.pk
-            new_user.prev = tail.pk
-
-        return_data = json.dumps(
-            {
+        return_data = {
                 "name": request.data["name"],
                 "session_id": pk,
                 "user_id": new_user.pk,
                 "key": new_user.key
             }
-        )
-        return HttpResponse(return_data, 201)
+
+        return JsonResponse(return_data, 201)
     
     def get_tail_player(self, starting_player):
         try:
@@ -97,7 +94,7 @@ class DraftSessionView(mixins.CreateModelMixin,
         if not user.current_turn:
             return HttpResponse("It is not your turn", 422)
         if not secret or secret != user.key:
-            return HttpResponse("Secret does not match", 401)
+            return HttpResponse("Access Denied", 401)
         if "select" not in action or "ban" not in action:
             return HttpResponse("Action is not allowed", 422)
         if action != session.current_phase:
@@ -112,7 +109,7 @@ class DraftSessionView(mixins.CreateModelMixin,
 
         # check if draft has ended
     
-    def get_session(pk):
+    def get_session(self, pk):
         try:
             return DraftSession.objects.get(pk=pk)
         except:
