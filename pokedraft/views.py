@@ -1,10 +1,12 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse, JsonResponse
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from .serializers import *
 from .models import *
-import json
 import uuid
+
+def message(msg):
+    return {"message": msg}
 
 class PokmeonDraftListViewSet(viewsets.ModelViewSet):
     queryset = PokemonDraftSet.objects.all()
@@ -39,13 +41,15 @@ class DraftSessionView(mixins.CreateModelMixin,
         if "name" not in request.data or request.data["name"] == "":
             return JsonResponse({"message": "Name missing in post data"}, status=422)
 
-        player_names = [x.name for x in session.draftuser_set.all()]
+        players = session.draftuser_set.all()
+        player_names = [x.name for x in players]
 
         if request.data["name"] in player_names:
             return JsonResponse({"message": "Name already used"}, status=401)
 
         new_user = DraftUser(name=request.data["name"], current_turn=False,
-                             session=session, key=str(uuid.uuid4()))
+                             session=session, key=str(uuid.uuid4()),
+                             order_in_session=len(players)+1)
         new_user.save()
         return_data = {
                 "name": request.data["name"],
@@ -71,7 +75,7 @@ class DraftSessionView(mixins.CreateModelMixin,
     def select_pokemon(self, request, pk=None):
         session = self.get_session(pk)
         if session == None:
-            return HttpResponse("Session does not exist", status=404)
+            return JsonResponse(message("Session does not exist"), status=404)
 
         user_pk = request.data["user_id"]
         pokemon_id = request.data["pokemon_id"]
@@ -82,25 +86,25 @@ class DraftSessionView(mixins.CreateModelMixin,
         try:
             user = session.draftuser_set.get(pk=user_pk)
         except:
-            return HttpResponse("Draft User does not exist", status=404)
+            return JsonResponse(message("Draft User does not exist"), status=404)
 
         try:
             selected_pokemon = session.draft_used.pokemon_list.get(pk=pokemon_id)
         except:
-            return HttpResponse("Selected Pokemon is not in the draft", status=404)
+            return JsonResponse("Selected Pokemon is not in the draft", status=404)
 
         if len(session.draftuser_set.all()) < session.min_player:
-            return HttpResponse("Not enough players yet", 422)
+            return JsonResponse(message("Not enough players yet"), 422)
         if not user.current_turn:
-            return HttpResponse("It is not your turn", 422)
+            return JsonResponse(message("It is not your turn"), 422)
         if not secret or secret != user.key:
-            return HttpResponse("Access Denied", 401)
+            return JsonResponse(message("Access Denied"), 401)
         if "select" not in action or "ban" not in action:
-            return HttpResponse("Action is not allowed", 422)
+            return JsonResponse(message("Action is not allowed"), 422)
         if action != session.current_phase:
-            return HttpResponse(f"Current action phase is {session.current_phase}", 422)
+            return JsonResponse(message(f"Current action phase is {session.current_phase}"), 422)
         if selected_pokemon in session.banned_pokemon:
-            return HttpResponse("Pokemon can no longer be selected, please choose another", 200)
+            return JsonResponse(message("Pokemon can no longer be selected, please choose another"), 200)
 
         user.pokemon_selected.add(selected_pokemon)
         session.banned_pokemon.add(selected_pokemon)
