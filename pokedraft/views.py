@@ -58,7 +58,7 @@ class DraftSessionView(mixins.CreateModelMixin,
                 "key": new_user.key
             }
 
-        return JsonResponse(return_data, 201)
+        return JsonResponse(return_data, status=201)
     
     def get_tail_player(self, starting_player):
         try:
