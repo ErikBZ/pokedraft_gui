@@ -1,7 +1,7 @@
 <template>
   <nav>
     <router-link to="/draft_set/">Draft Set</router-link> |
-    <router-link to="/draft_session">Draft Session</router-link>
+    <router-link to="/create_draft_session">Create Draft Session</router-link>
   </nav>
   <router-view/>
 </template>

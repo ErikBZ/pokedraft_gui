@@ -4,9 +4,9 @@
 </template>
 
 <script>
-import DraftSessionForm from '@/components/DraftSessionForm.vue';
-export default {
-  name: "CreateDraftSession",
-  components: { DraftSessionForm }
-}
+  import DraftSessionForm from '@/components/DraftSessionForm.vue';
+  export default {
+    name: "CreateDraftSession",
+    components: { DraftSessionForm }
+  }
 </script>
