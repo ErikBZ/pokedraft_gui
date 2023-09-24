@@ -1,7 +1,7 @@
 <template>
   <h1>Draft Set</h1>
-  <div v-for="set in draft_sets" :key="set.draft_id" class="set">
-    <h3>{{ set.name }}</h3>
+  <div v-for="set in draft_sets" :key="set.id" class="set">
+    <a :href="'/#/draft_set/' + set.id">{{ set.name }}</a>
   </div>
 </template>
 
