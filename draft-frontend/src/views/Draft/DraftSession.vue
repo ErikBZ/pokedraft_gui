@@ -2,13 +2,7 @@
   <h1>Draft Session: {{ name }}</h1>
   <CreateUserForm v-if="!user_logged_in"/>
   <div v-else>
-    <p>You've Logged In!</p>
-  </div>
-
-  <div v-if="draft_set">
-    <div v-for="pk in draft_set.pokemon_list" :key="pk.id">
-      {{ pk.name }}
-    </div>
+    <p>{{ draft_user['name'] }}</p>
   </div>
 </template>
 
@@ -26,7 +20,8 @@ export default {
       banned_pokemon: [],
       user_logged_in: false,
       draft_set: null,
-      draft_rules: null
+      draft_rules: null,
+      draft_user: null
     }
   },
   mounted() {
@@ -42,6 +37,8 @@ export default {
         this.current_phase = data['current_phase'],
         this.banned_pokemon = data['banned_pokemon']
 
+        this.loadDraftUserCookie(this.$route.params.id)
+
         return Promise.all([
           fetch('http://localhost:8000/draft_set/' + draft_set_id).then(res => res.ok && res.json()),
           fetch('http://localhost:8000/draft_rules/' + draft_rules_id).then(res => res.ok && res.json()),
@@ -52,6 +49,16 @@ export default {
         this.draft_rules = data[1]
       })
       .catch(err => console.log(err.message))
+  },
+  methods: {
+    loadDraftUserCookie(draft_session_id){
+      if(window.$cookies.isKey("draft_sessions")){
+        const raw_sessions = window.$cookies.get("draft_sessions")
+        const sessions = JSON.parse(atob(raw_sessions))
+        this.draft_user = sessions[draft_session_id]
+        this.user_logged_in = true
+      }
+    }
   }
 }
 </script>

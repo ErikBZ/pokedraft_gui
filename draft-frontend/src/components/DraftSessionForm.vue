@@ -49,6 +49,12 @@ export default {
   },
   methods: {
     handleSubmit() {
+      if (this.rule_id === null) {
+        return
+      }
+      if (this.draft_id === null) {
+        return
+      }
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },        
@@ -64,10 +70,11 @@ export default {
       }
       fetch("http://localhost:8000/draft_session/", requestOptions)
         .then(res => res.json())
-        .then(data => this.draft_session = data['id'])
+        .then(data => {
+          this.draft_session = data['id']
+          this.$router.push({path: "/draft_session/" + this.draft_session})
+        })
         .catch(err => console.log(err.message))
-
-        this.$router.push({path: "/draft_sesson/" + this.draft_session})
     }
   }
 }
