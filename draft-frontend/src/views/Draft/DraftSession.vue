@@ -4,13 +4,15 @@
   <div v-else>
     <p>{{ draft_user['name'] }}</p>
   </div>
+  <SelectablePokemonContainer :pokemon="pokemon" :draft_user="draft_user" v-if="draftUserLoaded"/>
 </template>
 
 <script>
 import CreateUserForm from '@/components/CreateUserForm.vue';
+import SelectablePokemonContainer from '@/components/SelectablePokemonContainer.vue';
 export default {
   name: "DraftSetList",
-  components: { CreateUserForm },
+  components: { CreateUserForm, SelectablePokemonContainer },
   data() {
     return {
       name: "",
@@ -21,7 +23,13 @@ export default {
       user_logged_in: false,
       draft_set: null,
       draft_rules: null,
-      draft_user: null
+      draft_user: null,
+      pokemon: []
+    }
+  },
+  computed: {
+    draftUserLoaded() {
+      return this.draft_user !== null
     }
   },
   mounted() {
@@ -46,6 +54,7 @@ export default {
       })
       .then(data => {
         this.draft_set = data[0]
+        this.pokemon = this.draft_set['pokemon_list']
         this.draft_rules = data[1]
       })
       .catch(err => console.log(err.message))
@@ -56,7 +65,9 @@ export default {
         const raw_sessions = window.$cookies.get("draft_sessions")
         const sessions = JSON.parse(atob(raw_sessions))
         this.draft_user = sessions[draft_session_id]
-        this.user_logged_in = true
+        if(this.draft_user){
+          this.user_logged_in = true
+        }
       }
     }
   }
