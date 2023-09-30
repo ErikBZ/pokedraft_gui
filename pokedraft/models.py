@@ -49,6 +49,7 @@ class DraftSession(models.Model):
     max_num_players = models.IntegerField(default=4)
     banned_pokemon = models.ManyToManyField(Pokemon)
     draft_rules = models.ForeignKey(DraftRules, on_delete=models.CASCADE, null=True)
+    current_player = models.TextField(null=True, blank=True)
     current_phase = models.CharField(
         max_length=1,
         choices=DraftPhase.choices,
@@ -60,6 +61,18 @@ class DraftUser(models.Model):
     name = models.TextField(null=True, blank=True)
     session = models.ForeignKey(DraftSession, on_delete=models.CASCADE, null=True)
     pokemon_selected = models.ManyToManyField(Pokemon)
-    current_turn = models.BooleanField()
     key = models.TextField(default="secret")
     order_in_session = models.IntegerField(default=1)
+
+    def is_current_turn(self):
+        ds = DraftSession.objects.get(pk=self.session)
+        return ds.current_player == self.id
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "current_turn": self.is_current_turn(),
+            "order_in_session": self.order_in_session,
+            "pokemon_selected": self.pokemon_selected,
+            "id": self.id
+        }

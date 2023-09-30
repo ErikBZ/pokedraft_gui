@@ -35,40 +35,37 @@ class DraftSessionView(mixins.CreateModelMixin,
             url_name="create_user")
     def create_user(self, request, pk=None):
         session = self.get_session(pk)
+        players = session.draftuser_set.all()
+        player_names = [x.name for x in players]
+
         if session == None:
             return JsonResponse({"message": "Session does not exist"}, status=404)
 
         if "name" not in request.data or request.data["name"] == "":
             return JsonResponse({"message": "Name missing in post data"}, status=422)
 
-        players = session.draftuser_set.all()
-        player_names = [x.name for x in players]
-
         if request.data["name"] in player_names:
             return JsonResponse({"message": "Name already used"}, status=401)
 
-        new_user = DraftUser(name=request.data["name"], current_turn=False,
-                             session=session, key=str(uuid.uuid4()),
+        if len(players) >= session.max_num_players:
+            return JsonResponse(message("Max number of player reached."), status=403)
+
+        new_user = DraftUser(name=request.data["name"], session=session, key=str(uuid.uuid4()),
                              order_in_session=len(players)+1)
         new_user.save()
+
+        if len(players) == 1:
+            session.current_player = new_user.id
+
         return_data = {
                 "name": request.data["name"],
                 "session_id": pk,
                 "user_id": new_user.pk,
+                "current_turn": new_user.is_current_turn(),
                 "key": new_user.key
             }
 
         return JsonResponse(return_data, status=201)
-    
-    def get_tail_player(self, starting_player):
-        try:
-            current_player = Pokemon.objects.get(starting_player)
-            while current_player.next != None or current_player.next != "":
-                current_player = Pokemon.objects.get(current_player.next)
-            return current_player
-        except:
-            return None
-
     
     @action(methods=["post"], detail=True, url_path="select-pokemon",
             url_name="select_pokemon")
@@ -89,22 +86,22 @@ class DraftSessionView(mixins.CreateModelMixin,
             return JsonResponse(message("Draft User does not exist"), status=404)
 
         try:
-            selected_pokemon = session.draft_used.pokemon_list.get(pk=pokemon_id)
+            selected_pokemon = session.draft_set.pokemon_list.get(pk=pokemon_id)
         except:
-            return JsonResponse("Selected Pokemon is not in the draft", status=404)
+            return JsonResponse(message("Selected Pokemon is not in the draft"), status=404)
 
-        if len(session.draftuser_set.all()) < session.min_player:
-            return JsonResponse(message("Not enough players yet"), 422)
-        if not user.current_turn:
-            return JsonResponse(message("It is not your turn"), 422)
         if not secret or secret != user.key:
-            return JsonResponse(message("Access Denied"), 401)
-        if "select" not in action or "ban" not in action:
-            return JsonResponse(message("Action is not allowed"), 422)
+            return JsonResponse(message("Access Denied"), status=401)
+        if len(session.draftuser_set.all()) < session.min_num_players:
+            return JsonResponse(message("Not enough players yet"), status=422)
+        if not user.current_turn:
+            return JsonResponse(message("It is not your turn"), status=422)
+        if action != DraftSession.DraftPhase.BAN or action != DraftSession.DraftPhase.PICK:
+            return JsonResponse(message("Action is not allowed"), status=422)
         if action != session.current_phase:
-            return JsonResponse(message(f"Current action phase is {session.current_phase}"), 422)
+            return JsonResponse(message(f"Current action phase is {session.current_phase}"), status=422)
         if selected_pokemon in session.banned_pokemon:
-            return JsonResponse(message("Pokemon can no longer be selected, please choose another"), 200)
+            return JsonResponse(message("Pokemon can no longer be selected, please choose another"), status=201)
 
         user.pokemon_selected.add(selected_pokemon)
         session.banned_pokemon.add(selected_pokemon)
@@ -112,13 +109,38 @@ class DraftSessionView(mixins.CreateModelMixin,
         # change next player here
 
         # check if draft has ended
+        return JsonResponse({
+            "selected_pokemon": user.pokemon_selected
+        }, status=201)
     
     def get_session(self, pk):
         try:
             return DraftSession.objects.get(pk=pk)
         except:
-            return None
-            
+            return JsonResponse({"message": "Page Not Found"}, 404)
+
+    def get_players(self, pk):
+        session = None
+        try:
+            session = DraftSession.objects.get(pk=pk)
+        except:
+            return JsonResponse({"message": "Page Not Found"}, 404)
+
+        players = session.draftuser_set
+        payload = [x.to_json() for x in players]
+
+        return JsonResponse(payload, 200)
+
+    def get_player(self, pk):
+        session = None
+        user_id = None
+        try:
+            session = DraftSession.objects.get(pk=pk)
+        except:
+            return JsonResponse({"message": "Page Not Found"}, 404)
+
+        players = session.draftuser_set.get(user_id)
+        return JsonResponse({}, 200)
 
 class DraftUserView(mixins.RetrieveModelMixin,
                                  mixins.UpdateModelMixin,

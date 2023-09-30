@@ -72,7 +72,6 @@ export default {
         .then(res => res.json())
         .then(data => {
           this.draft_session = data['id']
-          this.$router.push({path: "/draft_session/" + this.draft_session})
         })
         .catch(err => console.log(err.message))
     }
