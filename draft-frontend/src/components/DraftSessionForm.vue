@@ -1,5 +1,5 @@
 <template>
-  <form @submit="handleSubmit">
+  <form @submit.prevent="handleSubmit">
     <label>Name:</label>
     <input v-model="name">
     <br>
