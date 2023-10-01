@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit">
+  <form @submit="handleSubmit">
     <label>Name:</label>
     <input v-model="name">
     <br>
@@ -71,7 +71,8 @@ export default {
       fetch("http://localhost:8000/draft_session/", requestOptions)
         .then(res => res.json())
         .then(data => {
-          this.draft_session = data['id']
+          const id = data['id']
+          this.$router.push({name: 'draft_session', params: {id: id}})
         })
         .catch(err => console.log(err.message))
     }

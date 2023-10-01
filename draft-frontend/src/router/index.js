@@ -7,22 +7,22 @@ import DraftSession from '../views/Draft/DraftSession.vue'
 const routes = [
   {
     path: '/draft_set',
-    name: 'Draft Set',
+    name: 'select_draft_set',
     component: DraftSetList
   },
   {
     path: '/draft_set/:id',
-    name: "Draft Set Pokemon List",
+    name: "view_draft_set",
     component: DraftSetDetail
   },
   {
     path: '/create_draft_session',
-    name: "Create Draft Session",
+    name: "create_draft_session",
     component: CreateDraftSession
   },
   {
     path: '/draft_session/:id',
-    name: "Draft Session",
+    name: "draft_session",
     component: DraftSession
   }
 ]
