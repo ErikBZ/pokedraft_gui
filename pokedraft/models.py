@@ -65,8 +65,7 @@ class DraftUser(models.Model):
     order_in_session = models.IntegerField(default=1)
 
     def is_current_turn(self):
-        ds = DraftSession.objects.get(pk=self.session)
-        return ds.current_player == self.id
+        return self.session.current_player == self.id
 
     def to_json(self):
         return {

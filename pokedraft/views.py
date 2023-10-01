@@ -53,9 +53,11 @@ class DraftSessionView(mixins.CreateModelMixin,
         new_user = DraftUser(name=request.data["name"], session=session, key=str(uuid.uuid4()),
                              order_in_session=len(players)+1)
         new_user.save()
+        players = session.draftuser_set.all()
 
         if len(players) == 1:
             session.current_player = new_user.id
+            session.save()
 
         return_data = {
                 "name": request.data["name"],
@@ -94,7 +96,7 @@ class DraftSessionView(mixins.CreateModelMixin,
             return JsonResponse(message("Access Denied"), status=401)
         if len(session.draftuser_set.all()) < session.min_num_players:
             return JsonResponse(message("Not enough players yet"), status=422)
-        if not user.current_turn:
+        if session.current_player != str(user.id):
             return JsonResponse(message("It is not your turn"), status=422)
         if action != DraftSession.DraftPhase.BAN or action != DraftSession.DraftPhase.PICK:
             return JsonResponse(message("Action is not allowed"), status=422)
