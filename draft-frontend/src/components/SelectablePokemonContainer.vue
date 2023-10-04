@@ -6,12 +6,11 @@
   <div class="modal-container">
     <div v-for="pk in pokemon" :key="pk.id" class="card">
       <p>{{ pk.name }}</p>
-      <div v-if="pk.type2">
-        <p>{{ pk.type1 }} / {{ pk.type2 }}</p>
+      <div>
+        <p v-if="pk.type2">{{ pk.type1 }} / {{ pk.type2 }}</p>
+        <p v-else>{{ pk.type1 }}</p>
       </div>
-      <div v-else>
-        <p>{{ pk.type1 }}</p>
-      </div>
+      <p v-if="banned_pokemon.includes(pk)">Banned</p>
       <a :href="'https://pokemondb.net/pokedex/' + pk.name" target="_blank" rel="noopener noreferrer">Pokedex</a>
       <br>
       <button @click="this.updateSelectedPokemon(pk)">Select</button>
@@ -22,9 +21,10 @@
 <script>
 export default {
   name: "SelectablePokemonContainer",
+  emits: ["select-pokemon"],
   props: {
     pokemon: Array,
-    draft_user: Object,
+    banned_pokemon: Array
   },
   data() {
     return {
@@ -39,24 +39,7 @@ export default {
       if(this.selected_pokemon === null) {
         return
       }
-      console.log(this.draft_user)
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },        
-        body: JSON.stringify({
-          "pokemon_id": this.selected_pokemon.id,
-          "secret": this.draft_user.key,
-          "action": "P",
-          "user_id": this.draft_user.user_id,
-        })
-      }
-
-      fetch("http://localhost:8000/draft_session/" + this.$route.params.id + "/select-pokemon/", requestOptions)
-        .then(res => res.json())
-        .then(data => {
-          console.log(data)
-        })
-        .catch(err => console.log(err.message))
+      this.$emit("select-pokemon", this.selected_pokemon)
     }
   }
 }

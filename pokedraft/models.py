@@ -21,6 +21,11 @@ class PokemonDraftSet(models.Model):
     name = models.TextField(null=True, blank=True)
     pokemon_list = models.ManyToManyField(Pokemon)
 
+class DraftPhase(models.TextChoices):
+    PICK = 'P', _("Pick")
+    BAN = 'B', _("Ban")
+
+
 class DraftRules(models.Model):
     class TurnType(models.TextChoices):
         ROUND_ROBIN = 'RR', _('Round Robin')
@@ -31,6 +36,11 @@ class DraftRules(models.Model):
     picks_per_round = models.IntegerField(default=1)
     bans_per_round = models.IntegerField(default=1)
     max_pokemon = models.IntegerField(default=15)
+    phase_start = models.CharField(
+        max_length=1,
+        choices=DraftPhase.choices,
+        default=DraftPhase.BAN
+    )
     turn_type = models.CharField(
         max_length=2,
         choices=TurnType.choices,
@@ -38,10 +48,6 @@ class DraftRules(models.Model):
     )
 
 class DraftSession(models.Model):
-    class DraftPhase(models.TextChoices):
-        PICK = 'P', _("Pick")
-        BAN = 'B', _("Ban")
-
     id= models.BigAutoField(primary_key=True)
     name = models.TextField(null=True, blank=True)
     draft_set = models.ForeignKey(PokemonDraftSet, on_delete=models.CASCADE, null=True)
@@ -50,6 +56,8 @@ class DraftSession(models.Model):
     banned_pokemon = models.ManyToManyField(Pokemon)
     draft_rules = models.ForeignKey(DraftRules, on_delete=models.CASCADE, null=True)
     current_player = models.TextField(null=True, blank=True)
+    turn_ticker = models.IntegerField(default=0)
+    accepting_players = models.BooleanField(default=True)
     current_phase = models.CharField(
         max_length=1,
         choices=DraftPhase.choices,

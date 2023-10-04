@@ -4,7 +4,7 @@
   <div v-else>
     <p>{{ draft_user['name'] }}</p>
   </div>
-  <SelectablePokemonContainer :pokemon="pokemon" :draft_user="draft_user" v-if="draftUserLoaded"/>
+  <SelectablePokemonContainer @select-pokemon="selectPokemon" :pokemon="pokemon" :banned_pokemon="banned_pokemon" :draft_user="draft_user" v-if="draftUserLoaded"/>
 </template>
 
 <script>
@@ -59,7 +59,23 @@ export default {
       })
       .catch(err => console.log(err.message))
   },
+  beforeCreate: function() {
+    this.ticker = setInterval(() => {
+      this.fetch_session_data() 
+    }, 5000);
+  },
+  beforeUnmount: function() {
+    clearInterval(this.ticker)
+  },
   methods: {
+    fetch_session_data() {
+      fetch('http://localhost:8000/draft_session/' + this.$route.params.id)
+        .then(res => res.json())
+        .then(data => {
+          this.current_phase = data['current_phase'],
+          this.banned_pokemon = data['banned_pokemon']
+        })
+    },
     loadDraftUserCookie(draft_session_id){
       if(window.$cookies.isKey("draft_sessions")){
         const raw_sessions = window.$cookies.get("draft_sessions")
@@ -69,6 +85,28 @@ export default {
           this.user_logged_in = true
         }
       }
+    },
+    selectPokemon(pokemon) {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          "pokemon_id": pokemon.id,
+          "secret": this.draft_user.key,
+          "action": this.current_phase,
+          "user_id": this.draft_user.user_id,
+        })
+      }
+
+      fetch("http://localhost:8000/draft_session/" + this.$route.params.id + "/select-pokemon/", requestOptions)
+        .then(res => res.json())
+        .then(data => {
+          if(data.isKey("phase")) {
+            this.current_phase = data['phase']
+            this.banned_pokemon = data['banned_pokemon']
+          }
+        })
+        .catch(err => console.log(err.message))
     }
   }
 }
