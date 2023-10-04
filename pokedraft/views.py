@@ -34,7 +34,11 @@ class DraftSessionView(mixins.CreateModelMixin,
     @action(methods=["post"], detail=True, url_path="create-user",
             url_name="create_user")
     def create_user(self, request, pk=None):
-        session = self.get_session(pk)
+        try:
+            session = DraftSession.objects.get(pk=pk)
+        except:
+            return JsonResponse({"message": "Page Not Found"}, 404)
+
         players = session.draftuser_set.all()
         player_names = [x.name for x in players]
 
@@ -75,7 +79,11 @@ class DraftSessionView(mixins.CreateModelMixin,
     @action(methods=["post"], detail=True, url_path="select-pokemon",
             url_name="select_pokemon")
     def select_pokemon(self, request, pk=None):
-        session = self.get_session(pk)
+        try:
+            session = DraftSession.objects.get(pk=pk)
+        except:
+            return JsonResponse({"message": "Page Not Found"}, 404)
+
         if session == None:
             return JsonResponse(message("Session does not exist"), status=404)
 
@@ -165,11 +173,29 @@ class DraftSessionView(mixins.CreateModelMixin,
             else:
                 return DraftPhase.BAN
 
-    def get_session(self, pk):
+    @action(methods=["get"], detail=True, url_path="update", url_name="update")
+    def session_update(self, request, pk=None):
+        data = {}
         try:
-            return DraftSession.objects.get(pk=pk)
+            session = DraftSession.objects.get(pk=pk)
         except:
-            return JsonResponse({"message": "Page Not Found"}, 404)
+            return JsonResponse({"message": "Page Not Found"}, status=404)
+
+        data['current_phase'] = session.current_phase
+        data['banned_pokemon'] = [x.id for x in session.banned_pokemon.all()]
+        data['current_player'] = session.draftuser_set.get(pk=session.current_player).name
+
+        players = session.draftuser_set.all()
+        player_map = []
+        for p in players:
+            player_map.append({
+                "name": p.name,
+                "pokemon": [{"name": x.name, "type1": x.type1, "type2": x.type2, "id": x.id} for x in p.pokemon_selected.all()]
+            })
+
+        data['players'] = player_map
+
+        return JsonResponse(data, status=200)
 
     def get_players(self, pk):
         session = None

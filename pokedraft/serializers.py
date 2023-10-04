@@ -30,7 +30,7 @@ class DraftSessionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DraftSession
-        read_only_fields = ["banned_pokemon", "id", "current_phase"]
+        read_only_fields = ["banned_pokemon", "id", "current_phase", "current_player"]
         exclude = []
 
 class DraftUserSerializer(serializers.HyperlinkedModelSerializer):

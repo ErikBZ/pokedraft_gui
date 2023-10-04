@@ -4,32 +4,51 @@
   <div v-else>
     <p>{{ draft_user['name'] }}</p>
   </div>
+  <p>Current Player's Turn: {{ current_player }}</p>
+  <p>Current Phase: {{ long_name_phase }}</p>
   <SelectablePokemonContainer @select-pokemon="selectPokemon" :pokemon="pokemon" :banned_pokemon="banned_pokemon" :draft_user="draft_user" v-if="draftUserLoaded"/>
+  <br>
+  <div class="player-container">
+    <div v-for="player in players" :key="player.name" class="player-item">
+      <PlayerSelectedPokemonContainer :pokemon="player.pokemon" :name="player.name"/>
+    </div>
+  </div>
 </template>
 
 <script>
 import CreateUserForm from '@/components/CreateUserForm.vue';
 import SelectablePokemonContainer from '@/components/SelectablePokemonContainer.vue';
+import PlayerSelectedPokemonContainer from '@/components/PlayerSelectedPokemonContainer.vue';
 export default {
   name: "DraftSetList",
-  components: { CreateUserForm, SelectablePokemonContainer },
+  components: { CreateUserForm, SelectablePokemonContainer, PlayerSelectedPokemonContainer },
   data() {
     return {
       name: "",
       min_num_players: 0,
       max_num_players: 0,
       current_phase: "",
+      current_player: "",
       banned_pokemon: [],
       user_logged_in: false,
       draft_set: null,
       draft_rules: null,
       draft_user: null,
+      players: {},
       pokemon: []
     }
   },
   computed: {
     draftUserLoaded() {
       return this.draft_user !== null
+    },
+    long_name_phase() {
+      if(this.current_phase === "B") {
+        return "Banning"
+      }
+      else {
+        return "Picking"
+      }
     }
   },
   mounted() {
@@ -42,8 +61,8 @@ export default {
         this.name = data['name'],
         this.min_num_players = data['min_num_players'],
         this.max_num_players = data['max_num_players'],
-        this.current_phase = data['current_phase'],
         this.banned_pokemon = data['banned_pokemon']
+        this.current_phase = data['current_phase'],
 
         this.loadDraftUserCookie(this.$route.params.id)
 
@@ -58,22 +77,25 @@ export default {
         this.draft_rules = data[1]
       })
       .catch(err => console.log(err.message))
+      this.fetch_session_data()
   },
   beforeCreate: function() {
     this.ticker = setInterval(() => {
       this.fetch_session_data() 
-    }, 5000);
+    }, 15000);
   },
   beforeUnmount: function() {
     clearInterval(this.ticker)
   },
   methods: {
     fetch_session_data() {
-      fetch('http://localhost:8000/draft_session/' + this.$route.params.id)
+      fetch('http://localhost:8000/draft_session/' + this.$route.params.id + '/update')
         .then(res => res.json())
         .then(data => {
           this.current_phase = data['current_phase'],
           this.banned_pokemon = data['banned_pokemon']
+          this.players = data['players']
+          this.current_player = data['current_player']
         })
     },
     loadDraftUserCookie(draft_session_id){
@@ -111,3 +133,17 @@ export default {
   }
 }
 </script>
+
+<style>
+  .player-container {
+    width: 90%;
+    margin: auto;
+    border: 5px solid green;
+    background-color: rgba(225,225,225,1);
+  }
+  .player-item {
+    display: inline-block;
+    width: 400px;
+    margin: 10px
+  }
+</style>

@@ -10,10 +10,10 @@
         <p v-if="pk.type2">{{ pk.type1 }} / {{ pk.type2 }}</p>
         <p v-else>{{ pk.type1 }}</p>
       </div>
-      <p v-if="banned_pokemon.includes(pk)">Banned</p>
       <a :href="'https://pokemondb.net/pokedex/' + pk.name" target="_blank" rel="noopener noreferrer">Pokedex</a>
       <br>
-      <button @click="this.updateSelectedPokemon(pk)">Select</button>
+      <p v-if="banned_pokemon.includes(pk.id)">Banned or Selected</p>
+      <button v-else @click="this.updateSelectedPokemon(pk)">Select</button>
     </div>
   </div>
 </template>
@@ -32,6 +32,9 @@ export default {
     }
   },
   methods: {
+    isPokemonBanned(pk) {
+      return this.banned_pokemon.includes(pk)
+    },
     updateSelectedPokemon(pk) {
       this.selected_pokemon = pk
     },
@@ -51,7 +54,7 @@ export default {
   }
   .lockin button {
     height: 40px;
-    width: 90;
+    width: 90px;
     float: right;
     margin-right: 30%;
   }
