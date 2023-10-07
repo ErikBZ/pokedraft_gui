@@ -7,7 +7,6 @@ COPY ./manage.py /app/
 COPY ./pokedraft/ /app/pokedraft/
 COPY ./pokemon_drafts/ /app/pokemon_drafts/
 COPY ./data/ /app/data/
-RUN ls /app/
 ENTRYPOINT ["python3"] 
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 

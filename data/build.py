@@ -1,5 +1,5 @@
-from pokedraft.models import Pokemon, PokemonDraftSet
-from django.db import connection
+#!/usr/bin/env python
+from pokedraft.models import Pokemon, PokemonDraftSet, DraftRules, DraftPhase
 import json
 
 def get_json(file):
@@ -72,3 +72,26 @@ def no_legends(queryset):
 
 def filter_to_base_forms(queryset):
     return queryset.filter(evolves_from="")
+
+def create_draft_rules():
+    DraftRules(name="Round Robin Showdown", picks_per_round=1, 
+               bans_per_round=3, max_pokemon=6, phase_start=DraftPhase.BAN,
+               turn_type=DraftRules.TurnType.ROUND_ROBIN)
+    DraftRules(name="Snake Showdown", picks_per_round=1, 
+               bans_per_round=3, max_pokemon=6, phase_start=DraftPhase.BAN,
+               turn_type=DraftRules.TurnType.SNAKE)
+    DraftRules(name="Round Robin Nuzlocke", picks_per_round=1, 
+               bans_per_round=2, max_pokemon=6, phase_start=DraftPhase.BAN,
+               turn_type=DraftRules.TurnType.ROUND_ROBIN)
+    DraftRules(name="Snake Nuzlocke", picks_per_round=1, 
+               bans_per_round=2, max_pokemon=6, phase_start=DraftPhase.BAN,
+               turn_type=DraftRules.TurnType.SNAKE)
+
+def build_all():
+    # Create Pokemon
+    build_pokemon()
+    # Create Lists
+    clear_list()
+    build_list()
+    # Create Draft Rules
+    create_draft_rules()
