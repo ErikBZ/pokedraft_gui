@@ -7,6 +7,7 @@ def get_json(file):
         return json.load(f)
 
 def build_pokemon():
+    print("Building Pokemon DB")
     pokemon = get_json("./data/pokemon_models.json")
     batch = []
 
@@ -74,18 +75,23 @@ def filter_to_base_forms(queryset):
     return queryset.filter(evolves_from="")
 
 def create_draft_rules():
-    DraftRules(name="Round Robin Showdown", picks_per_round=1, 
+    print("Creating Draft rules")
+    showdown_rr = DraftRules(name="Round Robin Showdown", picks_per_round=1,
                bans_per_round=3, max_pokemon=6, phase_start=DraftPhase.BAN,
                turn_type=DraftRules.TurnType.ROUND_ROBIN)
-    DraftRules(name="Snake Showdown", picks_per_round=1, 
+    showdown_rr.save()
+    showdown_sn = DraftRules(name="Snake Showdown", picks_per_round=1,
                bans_per_round=3, max_pokemon=6, phase_start=DraftPhase.BAN,
                turn_type=DraftRules.TurnType.SNAKE)
-    DraftRules(name="Round Robin Nuzlocke", picks_per_round=1, 
+    showdown_sn.save()
+    nuzlocke_rr = DraftRules(name="Round Robin Nuzlocke", picks_per_round=1,
                bans_per_round=2, max_pokemon=6, phase_start=DraftPhase.BAN,
                turn_type=DraftRules.TurnType.ROUND_ROBIN)
-    DraftRules(name="Snake Nuzlocke", picks_per_round=1, 
+    nuzlocke_rr.save()
+    nuzlocke_sn = DraftRules(name="Snake Nuzlocke", picks_per_round=1,
                bans_per_round=2, max_pokemon=6, phase_start=DraftPhase.BAN,
                turn_type=DraftRules.TurnType.SNAKE)
+    nuzlocke_sn.save()
 
 def build_all():
     # Create Pokemon
