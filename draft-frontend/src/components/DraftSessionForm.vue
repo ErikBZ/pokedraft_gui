@@ -38,11 +38,13 @@ export default {
     }
   },
   mounted() {
-    fetch('http://localhost:8000/draft_rules/')
+    console.log(process.env.VUE_APP_BACKEND)
+    console.log(process.env.VUE_APP_BACKEND + '/draft_rules/')
+    fetch(process.env.VUE_APP_BACKEND + '/draft_rules/')
       .then(res => res.json())
       .then(data => this.rules = data)
       .catch(err => console.log(err.message))
-    fetch('http://localhost:8000/draft_set/')
+    fetch(process.env.VUE_APP_BACKEND + '/draft_set/')
       .then(res => res.json())
       .then(data => this.draft_sets = data)
       .catch(err => console.log(err.message))
@@ -68,7 +70,7 @@ export default {
           }
         )
       }
-      fetch("http://localhost:8000/draft_session/", requestOptions)
+      fetch(process.env.VUE_APP_BACKEND + "/draft_session/", requestOptions)
         .then(res => res.json())
         .then(data => {
           const id = data['id']

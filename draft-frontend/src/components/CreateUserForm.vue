@@ -43,7 +43,7 @@ export default {
           body: JSON.stringify({name: this.name})
         }
 
-        fetch("http://localhost:8000/draft_session/" + this.$route.params.id + "/create-user/", requestOptions)
+        fetch(process.env.VUE_APP_BACKEND + "/draft_session/" + this.$route.params.id + "/create-user/", requestOptions)
           .then(res => res.json())
           .then(data => {
             if("message" in data){

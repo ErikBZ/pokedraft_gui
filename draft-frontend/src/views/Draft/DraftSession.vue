@@ -52,7 +52,7 @@ export default {
     }
   },
   mounted() {
-    const ds_req = fetch('http://localhost:8000/draft_session/' + this.$route.params.id)
+    const ds_req = fetch(process.env.VUE_APP_BACKEND + '/draft_session/' + this.$route.params.id)
       .then(res => res.json())
     
     ds_req.then(data => {
@@ -67,8 +67,8 @@ export default {
         this.loadDraftUserCookie(this.$route.params.id)
 
         return Promise.all([
-          fetch('http://localhost:8000/draft_set/' + draft_set_id).then(res => res.ok && res.json()),
-          fetch('http://localhost:8000/draft_rules/' + draft_rules_id).then(res => res.ok && res.json()),
+          fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + draft_set_id).then(res => res.ok && res.json()),
+          fetch(process.env.VUE_APP_BACKEND + '/draft_rules/' + draft_rules_id).then(res => res.ok && res.json()),
         ])
       })
       .then(data => {
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     fetch_session_data() {
-      fetch('http://localhost:8000/draft_session/' + this.$route.params.id + '/update')
+      fetch(process.env.VUE_APP_BACKEND + '/draft_session/' + this.$route.params.id + '/update')
         .then(res => res.json())
         .then(data => {
           this.current_phase = data['current_phase'],
@@ -120,7 +120,7 @@ export default {
         })
       }
 
-      fetch("http://localhost:8000/draft_session/" + this.$route.params.id + "/select-pokemon/", requestOptions)
+      fetch(process.env.VUE_APP_BACKEND + '/draft_session/' + this.$route.params.id + '/select-pokemon/', requestOptions)
         .then(res => res.json())
         .then(data => {
           if(data.isKey("phase")) {

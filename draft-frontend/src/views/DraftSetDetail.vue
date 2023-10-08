@@ -17,7 +17,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://localhost:8000/draft_set/' + this.$route.params.id)
+    fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + this.$route.params.id)
       .then(res => res.json())
       .then(data => {
         this.name = data['name'],
