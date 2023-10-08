@@ -35,7 +35,7 @@ def clear_pokemon():
 def build_lists():
     draft_sets = [x.name for x in PokemonDraftSet.objects.all()]
 
-    for gen in range(1,8):
+    for gen in range(1,10):
         base_name = f"Gen {gen} All"
         if base_name not in draft_sets:
             build_list(base_name, gen)
@@ -92,6 +92,6 @@ def build_all():
     build_pokemon()
     # Create Lists
     clear_list()
-    build_list()
+    build_lists()
     # Create Draft Rules
     create_draft_rules()
