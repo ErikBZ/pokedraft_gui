@@ -17,17 +17,17 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from pokedraft.views import *
-
+BACKEND_URI_PREFIX = "api/v1/"
 router = routers.DefaultRouter()
-router.register(r'draft_set', PokmeonDraftListSimple)
-router.register(r'pokemon', PokemonListViewSet)
-router.register(r'draft_session', DraftSessionView)
-router.register(r'draft_user', DraftUserView)
-router.register(r'draft_rules', DraftRuleListViewSet)
+router.register(BACKEND_URI_PREFIX + 'draft_set', PokmeonDraftListSimple)
+router.register(BACKEND_URI_PREFIX + 'pokemon', PokemonListViewSet)
+router.register(BACKEND_URI_PREFIX + 'draft_session', DraftSessionView)
+router.register(BACKEND_URI_PREFIX + 'draft_user', DraftUserView)
+router.register(BACKEND_URI_PREFIX + 'draft_rules', DraftRuleListViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('draft_set/<pk>', PokmeonDraftListViewSet.as_view({"get": "retrieve"})),
-    path('draft_set/<pk>/', PokmeonDraftListViewSet.as_view({"get": "retrieve"}))
+    path(BACKEND_URI_PREFIX + 'draft_set/<pk>', PokmeonDraftListViewSet.as_view({"get": "retrieve"})),
+    path(BACKEND_URI_PREFIX + 'draft_set/<pk>/', PokmeonDraftListViewSet.as_view({"get": "retrieve"}))
 ]

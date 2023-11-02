@@ -183,7 +183,10 @@ class DraftSessionView(mixins.CreateModelMixin,
 
         data['current_phase'] = session.current_phase
         data['banned_pokemon'] = [x.id for x in session.banned_pokemon.all()]
-        data['current_player'] = session.draftuser_set.get(pk=session.current_player).name
+        if session.current_player != None:
+            data['current_player'] = session.draftuser_set.get(pk=session.current_player).name
+        else:
+            data['current_player'] = "None"
 
         players = session.draftuser_set.all()
         player_map = []

@@ -52,6 +52,8 @@ export default {
     }
   },
   mounted() {
+    console.log(process.env.VUE_APP_BACKEND + '/draft_session/' + this.$route.params.id)
+
     const ds_req = fetch(process.env.VUE_APP_BACKEND + '/draft_session/' + this.$route.params.id)
       .then(res => res.json())
     
