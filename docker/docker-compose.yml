@@ -8,14 +8,17 @@ services:
       - "80:80"
     environment: {}
     networks:
+      - drafts
+    links:
       - app
+      - gui
   app:
     image: pokedraft/app:v0.1
     networks:
-      - app
+      - drafts
   gui:
     image: pokedraft/gui:v0.1
     networks:
-      - app
+      - drafts
 networks:
-  app: {}
+  drafts: {}

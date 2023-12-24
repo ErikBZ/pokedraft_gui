@@ -1,25 +1,22 @@
-FROM node:18.0.0-alpine AS development
+FROM node:lts-alpine
 
-RUN mkdir /app
+# install simple http server for serving static content
+RUN npm install -g http-server
+
+# make the 'app' folder the current working directory
 WORKDIR /app
 
+# copy both 'package.json' and 'package-lock.json' (if available)
+COPY draft-frontend/package*.json ./
+
+# install project dependencies
+RUN npm install
+
+# copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY draft-frontend/ .
 
-RUN yarn global add @vue/cli
-RUN yarn install
-ENV HOST=0.0.0.0
-CMD ["yarn", "run", "serve"]
+# build app for production with minification
+RUN npm run build
 
-FROM development as dev-envs
-RUN <<EOF
-apk update
-apk add git
-EOF
-
-RUN <<EOF
-addgroup -S docker
-adduser -S --shell /bin/bash --ingroup docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-CMD ["yarn", "run", "serve"]
+EXPOSE 8080
+CMD [ "http-server", "dist" ]
