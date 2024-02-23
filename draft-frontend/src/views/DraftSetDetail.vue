@@ -17,12 +17,12 @@ export default {
     }
   },
   mounted() {
-    fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + this.$route.params.id)
+    fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + this.$route.params.id + "?detailed=true")
       .then(res => res.json())
       .then(data => {
         this.name = data['name'],
         this.draft_id = data['id'],
-        this.pokemon = data['pokemon_list']
+        this.pokemon = data['pokemon']["Stats"]
       })
       .catch(err => console.log(err.message))
   }
