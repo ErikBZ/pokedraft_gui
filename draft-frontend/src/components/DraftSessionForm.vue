@@ -63,14 +63,14 @@ export default {
         body: JSON.stringify(
           {
             name: this.name,
-            draft_set: this.draft_id,
-            draft_rules: this.rule_id,
+            draft_set: this.draft_id.id.String,
+            draft_rules: this.rule_id.id.String,
             min_num_players: this.min_players,
             max_num_players: this.max_players
           }
         )
       }
-      fetch(process.env.VUE_APP_BACKEND + "/draft_session/", requestOptions)
+      fetch(process.env.VUE_APP_BACKEND + "/draft_session/create", requestOptions)
         .then(res => res.json())
         .then(data => {
           const id = data['id']

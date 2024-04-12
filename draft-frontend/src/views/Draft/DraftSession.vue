@@ -63,19 +63,20 @@ export default {
         this.name = data['name'],
         this.min_num_players = data['min_num_players'],
         this.max_num_players = data['max_num_players'],
-        this.banned_pokemon = data['banned_pokemon']
+        this.banned_pokemon = data['selected_pokemon']
         this.current_phase = data['current_phase'],
 
         this.loadDraftUserCookie(this.$route.params.id)
 
         return Promise.all([
-          fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + draft_set_id).then(res => res.ok && res.json()),
+          fetch(process.env.VUE_APP_BACKEND + '/draft_set/' + draft_set_id + "?detailed=true").then(res => res.ok && res.json()),
           fetch(process.env.VUE_APP_BACKEND + '/draft_rules/' + draft_rules_id).then(res => res.ok && res.json()),
         ])
       })
       .then(data => {
         this.draft_set = data[0]
-        this.pokemon = this.draft_set['pokemon_list']
+        this.pokemon = this.draft_set['pokemon']['Stats']
+        console.log(this.pokemon)
         this.draft_rules = data[1]
       })
       .catch(err => console.log(err.message))
@@ -115,7 +116,7 @@ export default {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          "pokemon_id": pokemon.id,
+          "pokemon_id": pokemon.dex_id,
           "secret": this.draft_user.key,
           "action": this.current_phase,
           "user_id": this.draft_user.user_id,

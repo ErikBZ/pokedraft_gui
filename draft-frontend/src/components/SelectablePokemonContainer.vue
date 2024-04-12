@@ -4,10 +4,10 @@
     <button type="Submit" @click="sendPokemonSelection">Lock In</button>
   </div>
   <div class="modal-container">
-    <div v-for="pk in pokemon" :key="pk.id" class="card">
+    <div v-for="pk in pokemon" :key="pk.dex_id" class="card">
       <p>{{ pk.name }}</p>
       <div>
-        <p v-if="pk.type2">{{ pk.type1 }} / {{ pk.type2 }}</p>
+        <p v-if="pk.type2 != 'NONE'">{{ pk.type1 }} / {{ pk.type2 }}</p>
         <p v-else>{{ pk.type1 }}</p>
       </div>
       <a :href="'https://pokemondb.net/pokedex/' + pk.name" target="_blank" rel="noopener noreferrer">Pokedex</a>
