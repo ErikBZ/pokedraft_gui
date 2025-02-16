@@ -19,6 +19,8 @@
 import CreateUserForm from '@/components/CreateUserForm.vue';
 import SelectablePokemonContainer from '@/components/SelectablePokemonContainer.vue';
 import PlayerSelectedPokemonContainer from '@/components/PlayerSelectedPokemonContainer.vue';
+import get_id from '@/utils/utilities.js'
+
 export default {
   name: "DraftSetList",
   components: { CreateUserForm, SelectablePokemonContainer, PlayerSelectedPokemonContainer },
@@ -59,7 +61,8 @@ export default {
     
     ds_req.then(data => {
         const draft_set_id = data['draft_set']
-        const draft_rules_id = data['draft_rules']
+        console.log(data['draft_rules'])
+        const draft_rules_id = get_id(data['draft_rules'])
         this.name = data['name'],
         this.min_num_players = data['min_num_players'],
         this.max_num_players = data['max_num_players'],
@@ -119,7 +122,7 @@ export default {
           "pokemon_id": pokemon.dex_id,
           "secret": this.draft_user.key,
           "action": this.current_phase,
-          "user_id": this.draft_user.user_id,
+          "user_id": get_id(this.draft_user.user_id),
         })
       }
 
