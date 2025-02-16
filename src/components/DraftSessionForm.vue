@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import get_id from '@/utils/utilities.js'
 export default {
   name: 'DraftSessionForm',
   data() {
@@ -73,8 +74,8 @@ export default {
       fetch(process.env.VUE_APP_BACKEND + "/draft_session/create", requestOptions)
         .then(res => res.json())
         .then(data => {
-          const id = data['id']
-          this.$router.push({name: 'draft_session', params: {id: id}})
+          const id = get_id(data);
+          this.$router.push({name: 'draft_session', params: {id: id}});
         })
         .catch(err => console.log(err.message))
     }
