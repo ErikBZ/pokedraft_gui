@@ -20,6 +20,7 @@ import CreateUserForm from '@/components/CreateUserForm.vue';
 import SelectablePokemonContainer from '@/components/SelectablePokemonContainer.vue';
 import PlayerSelectedPokemonContainer from '@/components/PlayerSelectedPokemonContainer.vue';
 import get_id from '@/utils/utilities.js'
+
 export default {
   name: "DraftSetList",
   components: { CreateUserForm, SelectablePokemonContainer, PlayerSelectedPokemonContainer },
@@ -121,7 +122,7 @@ export default {
           "pokemon_id": pokemon.dex_id,
           "secret": this.draft_user.key,
           "action": this.current_phase,
-          "user_id": this.draft_user.user_id,
+          "user_id": get_id(this.draft_user.user_id),
         })
       }
 
