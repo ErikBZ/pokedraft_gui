@@ -1,8 +1,8 @@
 <template>
   <p>{{ name }}</p>
   <div class="player-modal-container">
-    <div v-for="pk in pokemon" :key="pk.id" class="player-card">
-      <p>{{ pk.name }}</p>
+    <div v-for="pk in selected_pokemon" :key="pk.id" class="player-card">
+      <p>{{ this.pokemon[pk-1].name }}</p>
       <div>
         <p v-if="pk.type2">{{ pk.type1 }} / {{ pk.type2 }}</p>
         <p v-else>{{ pk.type1 }}</p>
@@ -18,6 +18,7 @@ export default {
   props: {
     name: String,
     pokemon: Array,
+    selected_pokemon: Array[Number],
   },
 }
 </script>

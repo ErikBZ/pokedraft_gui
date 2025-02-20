@@ -2,23 +2,25 @@
   <div class="lockin">
     Selected Pokemon: {{ selected_pokemon.name }}
     <button type="Submit" @click="sendPokemonSelection">Lock In</button>
+    <p>{{banned_pokemon}}</p>
   </div>
   <div class="modal-container">
     <div v-for="pk in pokemon" :key="pk.dex_id" class="card">
-      <p>{{ pk.name }}</p>
+      <p>{{ pk.dex_id}}: {{pk.name }}</p>
       <div>
         <p v-if="pk.type2 != 'NONE'">{{ pk.type1 }} / {{ pk.type2 }}</p>
         <p v-else>{{ pk.type1 }}</p>
       </div>
       <a :href="'https://pokemondb.net/pokedex/' + pk.name" target="_blank" rel="noopener noreferrer">Pokedex</a>
       <br>
-      <p v-if="banned_pokemon.includes(pk.id)">Banned or Selected</p>
+      <p v-if="isPokemonBanned(pk.id)">Banned or Selected</p>
       <button v-else @click="this.updateSelectedPokemon(pk)">Select</button>
     </div>
   </div>
 </template>
 
 <script>
+import get_id from '@/utils/utilities.js'
 export default {
   name: "SelectablePokemonContainer",
   emits: ["select-pokemon"],
@@ -33,7 +35,7 @@ export default {
   },
   methods: {
     isPokemonBanned(pk) {
-      return this.banned_pokemon.includes(pk)
+      return this.banned_pokemon.includes(parseInt(get_id(pk)))
     },
     updateSelectedPokemon(pk) {
       this.selected_pokemon = pk
